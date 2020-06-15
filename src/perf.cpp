@@ -11,26 +11,6 @@
 #include <linux/perf_event.h>
 
 
-int64_t pmcs_a53[]={0x01,0x02,0x03,0x04,0x05,0x06,
-                    0x07,0x08,0x0A,0x0C,0x0D,0x0F,
-                    0x10,0x11,0x12,0x13,0x14,0x15,
-                    0x16,0x17,0x18,0x19,0x1D,0x60,
-                    0x61,0x7A,0x86,0x00,0x00,0x00};
-
-
-int64_t pmcs_a72[]={0x01,0x02,0x03,0x04,0x05,0x08,
-                    0x09,0x10,0x11,0x12,0x13,0x14,
-                    0x15,0x16,0x17,0x18,0x19,0x1B,
-                    0x1D,0x40,0x41,0x42,0x43,0x46,
-                    0x47,0x48,0x4C,0x4D,0x50,0x51,
-                    0x52,0x53,0x56,0x58,0x60,0x61,
-                    0x62,0x64,0x66,0x67,0x68,0x69,
-                    0x6A,0x6C,0x6D,0x6E,0x70,0x71,
-                    0x72,0x73,0x74,0x75,0x76,0x78,
-                    0x79,0x7A,0x7C,0x7E,0x81,0x82,
-                    0x83,0x84,0x86,0x90,0x91,0x00};
-
-
 /// Maximum events that can be recorded simultaneously.
 ///
 /// The Cortex A53 is a limiting factor here because it contains
@@ -55,7 +35,7 @@ static PerfEvent perf_sw[MAX_PROCESSORS][NUM_SOFTWARE_COUNTERS];
 static int num_processors;
 
 
-void perf_init()
+void perf_init(int *pmcs_values)
 {
 
     static int curr_index_pmc_a72 = 0;
@@ -92,32 +72,32 @@ void perf_init()
                     pe.type = PERF_TYPE_HARDWARE;
                     break;
                 case 1:
-                    config = pmcs_a53[curr_index_pmc_a53];
+                    config = pmcs_values[0];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 2:
-                    config = pmcs_a53[curr_index_pmc_a53+1];
+                    config = pmcs_values[1];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 3:
-                    config = pmcs_a53[curr_index_pmc_a53+2];
+                    config = pmcs_values[2];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 4:
-                    config = pmcs_a53[curr_index_pmc_a53+3];
+                    config = pmcs_values[3];
                     group_fd = perf_cpu[cpu][0].fd;
 		    pe.type = PERF_TYPE_RAW;
                     break;
                 case 5:
-                    config = pmcs_a53[curr_index_pmc_a53+4];
+                    config = pmcs_values[4];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 6:
-                    config = pmcs_a53[curr_index_pmc_a53+5];
+                    config = pmcs_values[5];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
@@ -173,32 +153,32 @@ void perf_init()
                     pe.type = PERF_TYPE_HARDWARE;
 		    break;
                 case 1:
-                    config = pmcs_a72[curr_index_pmc_a72];
+                    config = pmcs_values[0];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
                 case 2:
-                    config = pmcs_a72[curr_index_pmc_a72+1];
+                    config = pmcs_values[1];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
 		case 3:
-                    config = pmcs_a72[curr_index_pmc_a72+2];
+                    config = pmcs_values[2];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
 		case 4:
-                    config = pmcs_a72[curr_index_pmc_a72+3];
+                    config = pmcs_values[3];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
                 case 5:
-                    config = pmcs_a72[curr_index_pmc_a72+4];
+                    config = pmcs_values[4];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 6:
-                    config = pmcs_a72[curr_index_pmc_a72+5];
+                    config = pmcs_values[5];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
