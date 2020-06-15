@@ -30,8 +30,8 @@ struct PerfHardwareData
     uint64_t pmc_7 = -1;
 };
 
-/// Initialises the performance counting subsystem.
-extern void perf_init();
+/// Initialises the performance counting subsystem
+extern void perf_init(int *pmcs_values);
 
 /// Shutdowns the performance counting subsystem.
 extern void perf_shutdown();

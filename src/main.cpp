@@ -34,7 +34,7 @@ char pmcs[][35]={"0x01_0x02_0x03_0x04_0x05_0x06",
 		 "0x16_0x17_0x18_0x19_0x1D_0x60",
 		 "0x61_0x7A_0x86_0x00_0x00_0x00"};
 
-static int num_iter=5;
+//static int num_iter=5;
 
 #elif PMC_TYPE == PMCS_A72_ONLY
 char pmcs[][35]={"0x01_0x02_0x03_0x04_0x05_0x08",
@@ -49,7 +49,7 @@ char pmcs[][35]={"0x01_0x02_0x03_0x04_0x05_0x08",
 		 "0x79_0x7A_0x7C_0x7E_0x81_0x82",
 		 "0x83_0x84_0x86_0x90_0x91_0x00"};
 
-static int num_iter=11;
+//static int num_iter=11;
 
 #else
     perror("Invalid parameters!\n");
@@ -66,8 +66,11 @@ static int flag_update_schedule;
 static int power_monitor_fd = -1;
 static int power_monitor_pid = -1;
 static int parallel_region = 1;
-static int index_pmc = 0;
-
+static int pmc_index_print = 0;
+static int *pmcs_values;
+static int *pmcs_index_read;
+static int num_iter;
+static int total_pmcs_per_time = 6;
 
 static void cleanup()
 {
@@ -88,13 +91,12 @@ static void cleanup()
 static bool create_logging_file()
 {
     char filename[PATH_MAX];
-
 #if FLAG_ONLY_PARALLEL_REGION == 1
-    sprintf(filename, "Region_%d_%s.csv", parallel_region,pmcs[index_pmc]); //getpid() get fathers'pid
+    sprintf(filename, "Region_%d_%s.csv", parallel_region,pmcs[pmc_index_print]); //getpid() get fathers'pid
 #elif PMC_TYPE == PMCS_A53_ONLY || PMC_TYPE == PMCS_A72_ONLY
-    if(index_pmc >=0 && index_pmc<::num_iter){
-       sprintf(filename, "%s.csv", pmcs[index_pmc]);
-    }
+    //if(pmc_index_print >=0 && pmc_index_print<::num_iter){
+    sprintf(filename, "%s.csv", pmcs[pmc_index_print]);
+    //}
 #else
     sprintf(filename, "scheduler_%d.csv", application_pid); //getpid() get fathers'pid
 #endif
@@ -380,9 +382,40 @@ void sig_handler(int signo)
 }
 
 
+static void read_pmcs(void)
+{
+    int i,j, index, value;
+
+    FILE *fp_pmcs = fopen("pmcs_schedule.txt", "r");
+
+    if (fp_pmcs == NULL) {
+        fprintf(stderr, "Can't read pmcs.txt");
+        exit(-1);
+    }
+
+    fscanf(fp_pmcs, "%d\n", &num_iter);
+
+    ::pmcs_values = (int*)malloc(num_iter * total_pmcs_per_time * sizeof(int));
+    ::pmcs_index_read = (int*)malloc(num_iter * sizeof(int));
+
+    if ((pmcs_values == NULL) || (pmcs_index_read == NULL))
+    {
+        perror("scheduler: failed to allocate memory for pmcs");
+        exit(-1);
+    }
+
+    for(i=0;i<num_iter;i++){
+        fscanf(fp_pmcs, "%d ",&pmcs_index_read[i]);
+        for(j=0;j<6;j++)
+            fscanf(fp_pmcs,"%x,",&pmcs_values[(::total_pmcs_per_time * i)+ j]);
+    }
+}
+
 int main(int argc, char* argv[])
 {
     FILE *pf=NULL;
+    int current_pmcs[6],i;
+
     struct timespec start, finish;
 
     ::flag_update_schedule = FLAG_ONLY_PARALLEL_REGION ;
@@ -402,17 +435,21 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    read_pmcs();
     fprintf(stderr, "Application:%s\n", argv[1]);
-
-    const int num_episodes = 22;//number of time to collect all pmcs from big core
 
     for(int curr_episode = 0; curr_episode < ::num_iter; ++curr_episode)
     {
 
+        for(i=0;i<total_pmcs_per_time;i++){
+            current_pmcs[i]= ::pmcs_values[(::total_pmcs_per_time * curr_episode)+i];
+        }
+        ::pmc_index_print = pmcs_index_read[curr_episode]-1;
+
         //spawn_power_monitor();
         //sleep(1);
 
-        perf_init();
+        perf_init(current_pmcs);
         sleep(1);
 
 #if FLAG_ONLY_PARALLEL_REGION == 0
@@ -471,7 +508,6 @@ int main(int argc, char* argv[])
         int ret = system(cmd);
         */
         cleanup();
-        ::index_pmc++;
 #if FLAG_ONLY_PARALLEL_REGION == 1
         ::parallel_region = 1;
 #endif
