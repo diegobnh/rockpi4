@@ -475,7 +475,7 @@ int main(int argc, char* argv[])
 #if FLAG_ONLY_PARALLEL_REGION == 1
         ::parallel_region = 1;
 #endif
-        usleep(2000000); //only to clear anything in cpu - 2 seconds
+        usleep(5000000); //only to clear anything in cpu - 2 seconds
 
     }
     fclose(pf);
