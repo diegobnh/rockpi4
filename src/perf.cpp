@@ -72,32 +72,32 @@ void perf_init(int *pmcs_values)
                     pe.type = PERF_TYPE_HARDWARE;
                     break;
                 case 1:
-                    config = pmcs_values[curr_index_pmc_a53+0];
+                    config = pmcs_values[0];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 2:
-                    config = pmcs_values[curr_index_pmc_a53+1];
+                    config = pmcs_values[1];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 3:
-                    config = pmcs_values[curr_index_pmc_a53+2];
+                    config = pmcs_values[2];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 4:
-                    config = pmcs_values[curr_index_pmc_a53+3];
+                    config = pmcs_values[3];
                     group_fd = perf_cpu[cpu][0].fd;
 		    pe.type = PERF_TYPE_RAW;
                     break;
                 case 5:
-                    config = pmcs_values[curr_index_pmc_a53+4];
+                    config = pmcs_values[4];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 6:
-                    config = pmcs_values[curr_index_pmc_a53+5];
+                    config = pmcs_values[5];
                     group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
@@ -154,31 +154,31 @@ void perf_init(int *pmcs_values)
 		    break;
                 case 1:
                     config = pmcs_values[0];
-		    group_fd = perf_cpu[cpu][curr_index_pmc_a72+0].fd;
+		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
                 case 2:
-                    config = pmcs_values[curr_index_pmc_a72+1];
+                    config = pmcs_values[1];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
 		case 3:
-                    config = pmcs_values[curr_index_pmc_a72+2];
+                    config = pmcs_values[2];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
 		case 4:
-                    config = pmcs_values[curr_index_pmc_a72+3];
+                    config = pmcs_values[3];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
 		    break;
                 case 5:
-                    config = pmcs_values[curr_index_pmc_a72+4];
+                    config = pmcs_values[4];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
                 case 6:
-                    config = pmcs_values[curr_index_pmc_a72+5];
+                    config = pmcs_values[5];
 		    group_fd = perf_cpu[cpu][0].fd;
                     pe.type = PERF_TYPE_RAW;
                     break;
