@@ -446,8 +446,8 @@ int main(int argc, char* argv[])
         }
         ::pmc_index_print = pmcs_index_read[curr_episode]-1;
 
-        //spawn_power_monitor();
-        //sleep(1);
+        spawn_power_monitor();
+        sleep(1);
 
         perf_init(current_pmcs);
         sleep(1);
@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
 
         perf_shutdown();
 
-        /*
+        
         Enable when powerMonitor is working
         sleep(1);
         system("sudo kill -9 `ps -aux | grep grabserial | awk '{ print $2; }'`");
@@ -506,7 +506,7 @@ int main(int argc, char* argv[])
         char cmd[256];
         sprintf(cmd, "mv out_energy.txt %s.energy", pmcs[curr_episode]);
         int ret = system(cmd);
-        */
+        
         cleanup();
 #if FLAG_ONLY_PARALLEL_REGION == 1
         ::parallel_region = 1;
