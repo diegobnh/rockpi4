@@ -117,7 +117,7 @@ void perf_init(int *pmcs_values)
             pe.disabled = true;
             pe.read_format = PERF_FORMAT_ID | PERF_FORMAT_GROUP;
 
-            const auto fd = perf_event_open(&pe, -1, cpu, group_fd, 0);
+            const auto fd = perf_event_open(&pe, 0, cpu, group_fd, 0);
             if(fd == -1)
             {
                 perror("scheduler: failed to initialise perf");
@@ -197,7 +197,7 @@ void perf_init(int *pmcs_values)
             pe.disabled = true;
             pe.read_format = PERF_FORMAT_ID | PERF_FORMAT_GROUP;
 
-            const auto fd = perf_event_open(&pe, -1, cpu, group_fd, 0);
+            const auto fd = perf_event_open(&pe, 0, cpu, group_fd, 0);
             if(fd == -1)
             {
                 perror("scheduler: failed to initialise perf");
@@ -248,7 +248,7 @@ void perf_init(int *pmcs_values)
                 pe.disabled = true;
                 pe.read_format = PERF_FORMAT_ID | PERF_FORMAT_GROUP;
 
-                const auto fd = perf_event_open(&pe, -1, cpu, group_fd, 0);
+                const auto fd = perf_event_open(&pe, 0, cpu, group_fd, 0);
                 if(fd == -1)
                 {
                      perror("scheduler: failed to initialise perf");
