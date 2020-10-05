@@ -18,7 +18,7 @@ done
 
 #cd /home/rock/apps_and_data_collection/data_collection/scripts
 cd "$APP_BIN_DIR"
-echo "We are here "$PWD
+
 for file in ./*
 do
   #This is annoying. Is there a better way to do this?
@@ -56,7 +56,7 @@ do
 
     printf "$output" > pmcs_schedule.txt
 
-    sudo taskset -a -c 4-5 $("$COLLECTOR_PATH""/scheduler_A72")  ./$filename
+    sudo taskset -a -c 4-5 $COLLECTOR_PATH/scheduler_A72 ./$filename
     sudo rm -r "$APP_PMC_DIR""/2b_${filename}_pmcs"
     mkdir "$APP_PMC_DIR""/2b_${filename}_pmcs"
     mv *.csv "$APP_PMC_DIR""/2b_${filename}_pmcs"
