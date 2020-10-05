@@ -1,0 +1,61 @@
+
+This document is meant to explain how to use this data collection tool, made for a processor using
+the arm A53 and A72 cores in a 4 little 2 big configuration, respectively.
+
+
+These are the assumptions that this tool makes:
+
+1. Application directories (ADs) are the direct subdirectories of the apps directory. These 
+   subdirectories will contain all of the files related to a single application.
+
+2. Each AD will contain four specific subdirectories named bin, pmcs, dataset, and outlier_dir
+
+3. The bin subdirectory, within each AD, must only contain uniquely named executables with the
+   following format:
+			*_*n#b#
+
+   where '*' can be any character except '_'  and '#' must be a number. The number to the right 
+   of 'n' is the number of threads this application is to be run on, and the number to the right of 
+   'b' is the number of big cores to be used. The range of big cores is 0, 1, or 2. The range of threads
+   is 2, 4, 6.
+   
+   Note: There can be no file extension on the binaries within the bin subdirectory 
+
+Warning: A custom script may be necessary to conform your specific benchmarks to these assumptions.
+
+--------------------------------------------------------------------------------------------------------
+
+
+This is the command to run for the data collection of one application:
+
+cd data_collection
+sudo ./collect_data <AD name> <number of outlier loop iterations>
+
+Note: The second argument is just a maximum number of iterations.
+
+
+--------------------------------------------------------------------------------------------------------
+
+
+After running the above commands, the pmcs subdirectory will contain many subdirectories; one for
+each binary. These subdirectories will have all of the individual csv files and execution times,
+prior to dataset creation.
+
+The datasets subdirectory will contain the actual datasets (in csv file format) that are generated
+from the raw data in the pmcs subdirectory.
+
+The outliers_dir subdirectory will contain the record of the fix_outliers_loop.sh script, for 
+each iteration of the loop.
+
+   Note: A subdirectory called good_outlier_dir will be created in the event that something in 
+         the recollection process went wrong. This holds all of the original outlier records,
+         created here in the step above.
+
+
+Warning: Make sure that all binaries in every bin directory have execution permissions.
+	 Run: 
+		find ./ -name bin -type d
+		cd into all of the resulting directories 
+		chmod 755 ./*
+
+--------------------------------------------------------------------------------------------------------

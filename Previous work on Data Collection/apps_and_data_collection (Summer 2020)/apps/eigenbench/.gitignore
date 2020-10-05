@@ -1,0 +1,13 @@
+/src*
+/bin*
+*.txt
+/readings*
+*.csv
+*~
+/test.c
+/#*
+/a.out
+*.c
+!/testNPBFinal/*.c
+/addcopyright.sh
+/graphgenerator/*
