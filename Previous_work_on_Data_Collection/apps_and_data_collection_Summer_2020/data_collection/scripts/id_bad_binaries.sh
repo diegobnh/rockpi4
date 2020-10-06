@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd ../../apps/$1/pmcs
+cd $APP_PMC_DIR
 
 FOLDERS=`ls -d */`
 

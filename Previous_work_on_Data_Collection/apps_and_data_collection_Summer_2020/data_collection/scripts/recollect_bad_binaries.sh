@@ -2,7 +2,7 @@
 
 dirs=()
 
-./id_bad_binaries.sh $1 > problems.txt
+(source id_bad_binaries.sh $1 > problems.txt)
 
 while read line; do
 	arr=(${line//:/ })
@@ -22,7 +22,7 @@ done < problems.txt
 
 rm problems.txt
 
-cd ../../apps/$1/pmcs
+cd $APP_PMC_DIR"/"
 
 rm */pmcs_schedule.txt
 
@@ -33,10 +33,13 @@ for i in "${dirs[@]}"; do
 done
 
 
-cd ../../../data_collection/scripts
-sudo ./full_outlier_run.sh $1
+cd $COLLECTION_SCRIPTS_PATH
 
-mv ../../apps/$1/outlier_dir ../../apps/$1/good_outlier_dir
-mkdir ../../apps/$1/outlier_dir
+(source full_outlier_run.sh $1)
+echo "Here"
 
-sudo ./fix_outliers_loop.sh $1 100
+rm -r $APP_GOUT_DIR
+mv $APP_OUT_DIR $APP_GOUT_DIR
+mkdir $APP_OUT_DIR
+
+(source fix_outliers_loop.sh $1 100)

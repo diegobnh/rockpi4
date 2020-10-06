@@ -58,9 +58,9 @@ remove_excedent_lines_and_aggregate()
             then
               bin_dir=${parse[2]}
               bin_file=$bin_dir"_"${parse[3]}
-              cd ../4l2b_A72_${bin_file}_pmcs
+              cd $APP_PMC_DIR/4l2b_A72_${bin_file}_pmcs
               a72_min_lines=$(wc -l *.csv | awk '{print $1}' | sed '$d' | datamash min 1)
-              cd ../$i
+              cd $APP_PMC_DIR/$i
 
               #Found minimum between A53 and A72 directories
               if [[ NUM_LINHAS_COMUM_PMCS -gt a72_min_lines ]]; then
@@ -86,7 +86,7 @@ remove_excedent_lines_and_aggregate()
             then
               echo "Handling A72 Directory..."
 
-              cd ../4l2b_A72_${bin_file}_pmcs
+              cd $APP_PMC_DIR/4l2b_A72_${bin_file}_pmcs
 
               sed -i -n "1,$NUM_LINHAS_COMUM_PMCS p" *.csv
 
@@ -99,7 +99,7 @@ remove_excedent_lines_and_aggregate()
              	 done
 	      fi
 
-              cd ../$i
+              cd $APP_PMC_DIR/$i
 
             fi
 
@@ -147,13 +147,13 @@ remove_excedent_lines_and_aggregate()
                       cat consolidated-pmc-little.dat | tr "," "\t" | datamash median 1-$num_columns | tr "," "." | tr "\t" "," > consolidated-pmc-little.avg
 
                       #Do the same in the A72 directory
-                      cd ../4l2b_A72_${bin_file}_pmcs
+                      cd $APP_PMC_DIR/4l2b_A72_${bin_file}_pmcs
 
                       paste *.csv -d, > consolidated-pmc-big.dat
                       num_columns=$(cat consolidated-pmc-big.dat | awk -F, 'NR==1 {print NF; exit;}')
                       cat consolidated-pmc-big.dat | tr "," "\t" | datamash median 1-$num_columns | tr "," "." | tr "\t" "," > consolidated-pmc-big.avg
 
-                      cd ../$i
+                      cd $APP_PMC_DIR/$i
 	    fi
             ###################################################################
 
@@ -227,7 +227,7 @@ create_dataset()
     ############################################################################
 }
 
-cd ../../apps/$1/pmcs
+cd $APP_PMC_DIR
 
 check_stdev_pmcs
 read -p "Check the standard deviation time..press ENTER to continue"
@@ -238,4 +238,4 @@ read -p "All the execution time was calculated..press ENTER to continue"
 create_dataset
 read -p "Partial Dataset was created..press ENTER to finish!"
 
-mv *.csv ../datasets
+mv *.csv $APP_DAT_DIR

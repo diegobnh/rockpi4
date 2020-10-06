@@ -45,10 +45,10 @@
 #Step 2: Parse the directory for all information listed above
 #Step 3: Run the relevant binary whilst collecting the relevant PMCs
 
-cd ../../apps/$1/pmcs
+cd "$APP_PMC_DIR"
 rm */pmcs_schedule.txt
 
-cat ../outlier_dir/outliers.txt | while read LINE
+cat $APP_OUT_DIR/outliers.txt | while read LINE
 do
 
 	#Step 1
@@ -233,8 +233,8 @@ do
 		core_type="A72"
 	fi
 
-	cd $goto_dir
-	mv pmcs_schedule.txt ../../bin
+	cd $APP_PMC_DIR"/"$goto_dir
+	mv pmcs_schedule.txt $APP_BIN_DIR
 	#Need to replace old ExecutionTimes with the new ones
 	#so we need to store the old ones programatically
 
@@ -249,7 +249,7 @@ do
 	#Need to know the line numbers to replace in the old
 	#ExecutionTimes.txt file
 	nums=()
-	cat ../../outlier_dir/outliers.txt | (while read LINE
+	cat $APP_OUT_DIR/outliers.txt | (while read LINE
 	do
 		parsed_outlier=()
        		for entry in $(echo $LINE | tr " " "\n")
@@ -269,26 +269,26 @@ do
 	done
 
 
-	pmcs_dir=$PWD
-        cd ../../bin
+	#pmcs_dir=$PWD
+        cd $APP_BIN_DIR
 	echo "Current directory: "$PWD
 	if [ "$config" = "4l" ]
 	then
-    		sudo taskset -a -c 0-3 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
+    		sudo taskset -a -c 0-3 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		mv *.csv $APP_PMC_DIR"/"$goto_dir
+		mv *.txt $APP_PMC_DIR"/"$goto_dir
 
 	elif [ "$config" = "2b" ]
 	then
-    		sudo taskset -a -c 4-5 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
+    		sudo taskset -a -c 4-5 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		mv *.csv $APP_PMC_DIR"/"$goto_dir
+		mv *.txt $APP_PMC_DIR"/"$goto_dir
 	else
-    		sudo taskset -a -c 0-5 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
+    		sudo taskset -a -c 0-5 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		mv *.csv $APP_PMC_DIR"/"$goto_dir
+		mv *.txt $APP_PMC_DIR"/"$goto_dir
 	fi
-        cd $pmcs_dir
+        cd $APP_PMC_DIR"/"$goto_dir
 	#Read in the new ExecutionTimes
 	#Each line number - 1 is a proper index in the
 	#new_times variable

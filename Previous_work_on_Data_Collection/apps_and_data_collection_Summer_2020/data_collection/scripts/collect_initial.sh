@@ -74,7 +74,7 @@ do
 
     printf "$output" > pmcs_schedule.txt
 
-    sudo taskset -a -c 0-3 ."$COLLECTOR_PATH"/scheduler_A53  ./$filename
+    sudo taskset -a -c 0-3 $COLLECTOR_PATH/scheduler_A53  ./$filename
     sudo rm -r "$APP_PMC_DIR""/4l_${filename}_pmcs"
     mkdir "$APP_PMC_DIR""/4l_${filename}_pmcs"
     mv *.csv "$APP_PMC_DIR""/4l_${filename}_pmcs"
@@ -99,7 +99,7 @@ do
 
     printf "$output" > pmcs_schedule.txt
 
-    sudo taskset -a -c 0-5 ."$COLLECTOR_PATH"/scheduler_A72  ./$filename
+    sudo taskset -a -c 0-5 $COLLECTOR_PATH/scheduler_A72  ./$filename
     sudo rm -r "$APP_PMC_DIR""/4l2b_A72_${filename}_pmcs"
     mkdir "$APP_PMC_DIR""/4l2b_A72_${filename}_pmcs"
     mv *.csv "$APP_PMC_DIR""/4l2b_A72_${filename}_pmcs"
@@ -116,7 +116,7 @@ do
 
     printf "$output" > pmcs_schedule.txt
 
-    sudo taskset -a -c 0-5 ."$COLLECTOR_PATH"/scheduler_A53  ./$filename
+    sudo taskset -a -c 0-5 $COLLECTOR_PATH/scheduler_A53  ./$filename
     sudo rm -r "$APP_PMC_DIR""/4l2b_A53_${filename}_pmcs"
     mkdir "$APP_PMC_DIR""/4l2b_A53_${filename}_pmcs"
     mv *.csv "$APP_PMC_DIR""/4l2b_A53_${filename}_pmcs"

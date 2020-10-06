@@ -2,10 +2,9 @@
 
 # $1 is the application
 
-cd ../../apps/$1/pmcs
-
+cd $APP_PMC_DIR"/"
+echo "We are here "$PWD
 FOUND=`find */ -name pmcs_schedule.txt`
-#rm */pmcs_schedule.txt
 
 for entry in $FOUND
 do
@@ -34,19 +33,20 @@ do
         bin_dir=${bin_info[1]}
         bin_filename=$bin_dir"_"${bin_info[2]}
 
+        core_type="A53"
         if [ "$config" = "2b" ] || [ "$config" = "A72" ]
         then
                 core_type="A72"
         fi
 
 
- 	NL=$'\n'
+ 	      NL=$'\n'
 
         output=""
-	echo $config
+	      echo $core_type
         if [ "$config" = "4l"  ] || [ "$config" = "A53" ]
         then
-		output="5${NL}"
+		            output="5${NL}"
                 output+="1 0x01,0x02,0x03,0x04,0x05,0x06${NL}"
                 output+="2 0x07,0x08,0x0A,0x0C,0x0D,0x0F${NL}"
                 output+="3 0x10,0x11,0x12,0x13,0x14,0x15${NL}"
@@ -55,7 +55,7 @@ do
 
         elif [ "$config" = "2b"  ] || [ "$config" = "A72"  ]
         then
-		output="11${NL}"
+		            output="11${NL}"
                	output+="1 0x01,0x02,0x03,0x04,0x05,0x08${NL}"
                 output+="2 0x09,0x10,0x11,0x12,0x13,0x14${NL}"
                 output+="3 0x15,0x16,0x17,0x18,0x19,0x1B${NL}"
@@ -66,38 +66,35 @@ do
                 output+="8 0x6A,0x6C,0x6D,0x6E,0x70,0x71${NL}"
                 output+="9 0x72,0x73,0x74,0x75,0x76,0x78${NL}"
                 output+="10 0x79,0x7A,0x7C,0x7E,0x81,0x82${NL}"
-        	output+="11 0x83,0x84,0x86,0x90,0x91,0x00${NL}"
+        	      output+="11 0x83,0x84,0x86,0x90,0x91,0x00${NL}"
         fi
 
         printf "$output" > $goto_dir"/pmcs_schedule.txt"
 
 
+	      cd $APP_PMC_DIR"/"$goto_dir
 
-	cd $goto_dir
-	#echo $PWD
-	#ls -l .
-	mv pmcs_schedule.txt ../../bin
-	pmcs_dir=$PWD
-	cd ../../bin
+	      mv pmcs_schedule.txt $APP_BIN_DIR
+	      #pmcs_dir=$PWD
+	      cd $APP_BIN_DIR
+
         if [ "$config" = "4l" ]
         then
-                sudo taskset -a -c 0-3 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
+                sudo taskset -a -c 0-3 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		            mv *.csv $APP_PMC_DIR"/"$goto_dir
+		            mv *.txt $APP_PMC_DIR"/"$goto_dir
 
         elif [ "$config" = "2b" ]
         then
-                sudo taskset -a -c 4-5 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
+                sudo taskset -a -c 4-5 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		            mv *.csv $APP_PMC_DIR"/"$goto_dir
+		            mv *.txt $APP_PMC_DIR"/"$goto_dir
 
         else
-                sudo taskset -a -c 0-5 ../../../data_collection/bin/scheduler_$core_type ./$bin_filename
-		mv *.csv $pmcs_dir
-		mv *.txt $pmcs_dir
-
-	fi
-	cd $pmcs_dir
-	cd ..
-
+                sudo taskset -a -c 0-5 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename
+		            mv *.csv $APP_PMC_DIR"/"$goto_dir
+		            mv *.txt $APP_PMC_DIR"/"$goto_dir
+	      fi
+	      cd $APP_PMC_DIR"/"$goto_dir
+	      cd ..
 done

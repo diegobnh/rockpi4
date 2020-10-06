@@ -9,7 +9,6 @@ id_outliers()
 
         #cd ../../apps/$1/pmcs
         FOLDERS=`ls -d */`
-
         for i in $FOLDERS;
         do
                 cd $i
@@ -44,5 +43,5 @@ id_outliers()
                 cd ..
         done
 }
-cd ../../apps/$1/pmcs
-id_outliers > ../outlier_dir/outliers.txt
+cd $APP_PMC_DIR
+id_outliers > $APP_OUT_DIR/outliers.txt
