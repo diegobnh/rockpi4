@@ -1,8 +1,10 @@
-2b_branches_tbr25n2b2_pmcs/ 1
-2b_branches_tbr40n2b2_pmcs/ 9
-2b_branches_tbr45n2b2_pmcs/ 4
-4l2b_A53_branches_tbr1.5n6b2_pmcs/ 2 5
-4l2b_A53_branches_tbr20n6b2_pmcs/ 2
-4l2b_A53_branches_tbr25n6b2_pmcs/ 5
-4l_branches_tbr05n4b0_pmcs/ 3
-4l_branches_tbr09n4b0_pmcs/ 4
+2b_branches_tbr05n2b2_pmcs/ 1
+2b_branches_tbr09n2b2_pmcs/ 1
+2b_branches_tbr10n2b2_pmcs/ 1 2 7
+2b_branches_tbr15n2b2_pmcs/ 1
+2b_branches_tbr1n2b2_pmcs/ 1
+2b_branches_tbr40n2b2_pmcs/ 1
+4l2b_A53_branches_tbr05n6b2_pmcs/ 1
+4l2b_A72_branches_tbr1n6b2_pmcs/ 7
+4l_branches_tbr25n4b0_pmcs/ 1
+4l_branches_tbr45n4b0_pmcs/ 1

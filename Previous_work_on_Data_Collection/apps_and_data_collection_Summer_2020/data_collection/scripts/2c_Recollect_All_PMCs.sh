@@ -3,7 +3,6 @@
 # $1 is the application
 
 cd $APP_PMC_DIR"/"
-echo "We are here "$PWD
 FOUND=`find */ -name pmcs_schedule.txt`
 
 for entry in $FOUND
@@ -43,7 +42,7 @@ do
  	      NL=$'\n'
 
         output=""
-	      echo $core_type
+	      
         if [ "$config" = "4l"  ] || [ "$config" = "A53" ]
         then
 		            output="5${NL}"

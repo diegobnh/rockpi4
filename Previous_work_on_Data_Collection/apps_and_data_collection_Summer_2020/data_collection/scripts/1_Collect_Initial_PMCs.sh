@@ -22,8 +22,7 @@ cd "$APP_BIN_DIR"
 for file in ./*
 do
   #This is annoying. Is there a better way to do this?
-  ls
-  echo $file
+  #echo $file
   filename="${file##*/}"
   temp=`echo -n $filename | tail -c 4`
   temp2="${temp#*n}"

@@ -16,7 +16,7 @@ export COLLECTION_SCRIPTS_PATH=$PWD"/scripts"
 export COLLECTOR_PATH=$PWD"/bin"
 
 cd $COLLECTION_SCRIPTS_PATH
-(source collect_initial.sh $1)
-(source fix_outliers_loop.sh $1 $2)
-(source recollect_bad_binaries.sh $1)
-(source create_dataset.sh $1)
+(source 1_Collect_Initial_PMCs.sh $1)
+(source 2_Fix_Outliers.sh $1 $2)
+(source 3_Fix_Bad_Data.sh $1)
+(source 4_Create_Datasets.sh $1)

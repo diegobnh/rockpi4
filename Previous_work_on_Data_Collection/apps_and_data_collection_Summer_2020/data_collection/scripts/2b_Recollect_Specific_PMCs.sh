@@ -271,7 +271,7 @@ do
 
 	#pmcs_dir=$PWD
         cd $APP_BIN_DIR
-	echo "Current directory: "$PWD
+	#echo "Current directory: "$PWD
 	if [ "$config" = "4l" ]
 	then
     		sudo taskset -a -c 0-3 $COLLECTOR_PATH/scheduler_$core_type ./$bin_filename

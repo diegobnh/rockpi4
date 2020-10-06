@@ -2,7 +2,7 @@
 
 dirs=()
 
-(source id_bad_binaries.sh $1 > problems.txt)
+(source 3a_Find_Bad_Data_Binaries.sh $1 > problems.txt)
 
 while read line; do
 	arr=(${line//:/ })
@@ -35,11 +35,11 @@ done
 
 cd $COLLECTION_SCRIPTS_PATH
 
-(source full_outlier_run.sh $1)
-echo "Here"
+(source 2c_Recollect_All_PMCs.sh $1)
+
 
 rm -r $APP_GOUT_DIR
 mv $APP_OUT_DIR $APP_GOUT_DIR
 mkdir $APP_OUT_DIR
 
-(source fix_outliers_loop.sh $1 100)
+(source 2_Fix_Outliers.sh $1 100)

@@ -8,7 +8,7 @@ for i in $(seq 1 $2)
 do
 	#Use the parentheses to make this it's own subshell
 	#Without these, the i variable becomes a string
-	(source find_outliers.sh $1)
+	(source 2a_Find_Outliers.sh $1)
 
 	let index=$i-1
 
@@ -22,17 +22,13 @@ do
 
 	if [[ "$i" -gt 1 ]] && [[ $cur_len == $prev_len ]]
 	then
-		echo "Before full_outlier_run"
-		#sleep 10
-		source full_outlier_run.sh $1
-		echo "After full_outlier_run"
-		#sleep 10
+
+		source 2c_Recollect_All_PMCs.sh $1
+
 	else
-		echo "Before recollect"
-		#sleep 10
-		source recollect.sh $1
-		echo "After recollect"
-		#sleep 10
+
+		source 2b_Recollect_Specific_PMCs.sh $1
+		
 	fi
 
 	cd $APP_OUT_DIR
