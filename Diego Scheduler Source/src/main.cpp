@@ -497,7 +497,7 @@ int main(int argc, char* argv[])
         perf_shutdown();
 
         
-        Enable when powerMonitor is working
+        //Enable when powerMonitor is working
         sleep(1);
         system("sudo kill -9 `ps -aux | grep grabserial | awk '{ print $2; }'`");
         power_monitor_pid = -1;

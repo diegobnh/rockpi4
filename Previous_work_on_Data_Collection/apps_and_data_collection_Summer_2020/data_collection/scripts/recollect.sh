@@ -1,6 +1,6 @@
 #! /bin/bash
 
-#Look at the outliers.txt file. 
+#Look at the outliers.txt file.
 #Each line follows the following format
 
 #<directory> <line number> [<line number> ...]
@@ -17,7 +17,7 @@
 #  cluster configuration/core type. These specific PMCs are outlined
 #  in Diego's scheduler code.
 
-#For the 4l cluster configuration or the A53 core type, the order of 
+#For the 4l cluster configuration or the A53 core type, the order of
 #collection is as follows:
 #  1: 0x01_0x02_0x03_0x04_0x05_0x06
 #  2: 0x07_0x08_0x0A_0x0C_0x0D_0x0F
@@ -298,13 +298,12 @@ do
 		new_times+=( $entry )
 	done
 
+	count=0
 	for i in "${nums[@]}"
 	do
-		for j in "${new_times[@]}"
-		do
-			let "index=$i-1"
-			old_times[$index]=$j
-		done
+		let "index=$i-1"
+    old_times[$index]=${new_times[$count]}
+    let "count=$count+1"
 	done
 
 	NL=$'\n'
@@ -314,7 +313,7 @@ do
 	output=""
 	for i in "${old_times[@]}"
 	do
-		output+="$i${NL}" 
+		output+="$i${NL}"
 	done
 
 	printf "$output" > ExecutionTimes.txt
