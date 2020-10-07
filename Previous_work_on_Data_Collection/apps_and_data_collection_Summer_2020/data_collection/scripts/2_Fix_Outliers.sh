@@ -23,18 +23,19 @@ do
 	if [[ "$i" -gt 1 ]] && [[ $cur_len == $prev_len ]]
 	then
 
-		source 2c_Recollect_All_PMCs.sh $1
+		(source 2c_Recollect_All_PMCs.sh $1)
 
 	else
 
-		source 2b_Recollect_Specific_PMCs.sh $1
-		
+		(source 2b_Recollect_Specific_PMCs.sh $1)
+
 	fi
 
 	cd $APP_OUT_DIR
 
 	mv outliers.txt outliers$i.txt
-
+  ls
+	echo $i
 	cd $COLLECTION_SCRIPTS_PATH
 
 done

@@ -25,7 +25,7 @@ id_outliers()
 
                 OUTPUT="${i}"
 
-                cat ExecutionTimes.txt | (while read ENTRY
+                while read ENTRY;
                 do
                         if (( $(echo "scale=9;$( printf "%.9f" $ENTRY ) < $LOWER" | bc -l) )) || (( $(echo "scale=9;$( printf "%.9f" $ENTRY ) > $UPPER" | bc -l) ))
                         then
@@ -33,12 +33,12 @@ id_outliers()
                                 HAS_OUTLIER=0
                         fi
                         let LINE++
-                done
+                done < ExecutionTimes.txt
 
                 if [ "$HAS_OUTLIER" = "0" ]
                 then
                         echo $OUTPUT
-                fi)
+                fi
 
                 cd ..
         done

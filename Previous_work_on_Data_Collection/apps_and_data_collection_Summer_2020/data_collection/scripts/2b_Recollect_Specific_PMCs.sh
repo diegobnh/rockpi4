@@ -48,7 +48,7 @@
 cd "$APP_PMC_DIR"
 rm */pmcs_schedule.txt
 
-cat $APP_OUT_DIR/outliers.txt | while read LINE
+while read LINE;
 do
 
 	#Step 1
@@ -179,7 +179,7 @@ do
 	done
 
 	printf "$output" > $dir"pmcs_schedule.txt"
-done
+done < $APP_OUT_DIR/outliers.txt
 
 #Step 3 ... not quite sure how to do that yet ...
 
@@ -241,15 +241,15 @@ do
 	#Each line number - 1 is the proper index of old_times
 	#variable
 	old_times=()
-	cat ExecutionTimes.txt | (while read entry
+	while read entry;
 	do
 		old_times+=( $entry )
-	done
+	done < ExecutionTimes.txt
 
 	#Need to know the line numbers to replace in the old
 	#ExecutionTimes.txt file
 	nums=()
-	cat $APP_OUT_DIR/outliers.txt | (while read LINE
+	while read LINE;
 	do
 		parsed_outlier=()
        		for entry in $(echo $LINE | tr " " "\n")
@@ -266,7 +266,7 @@ do
                         	nums+=( $entry )
                 	fi
         	done
-	done
+	done < $APP_OUT_DIR/outliers.txt
 
 
 	#pmcs_dir=$PWD
@@ -293,10 +293,10 @@ do
 	#Each line number - 1 is a proper index in the
 	#new_times variable
 	new_times=()
-	cat ExecutionTimes.txt | (while read entry
+	while read entry;
 	do
 		new_times+=( $entry )
-	done
+	done < ExecutionTimes.txt
 
 	count=0
 	for i in "${nums[@]}"
@@ -317,8 +317,6 @@ do
 	done
 
 	printf "$output" > ExecutionTimes.txt
-
-	)))
 
 	cd ..
 
