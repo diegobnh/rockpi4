@@ -1,6 +1,1 @@
-2b_branches_tbr09n2b2_pmcs/ 1
-2b_branches_tbr10n2b2_pmcs/ 4
-2b_branches_tbr1n2b2_pmcs/ 1 2
-2b_branches_tbr35n2b2_pmcs/ 7
-2b_branches_tbr40n2b2_pmcs/ 1 2 4
-4l2b_A72_branches_tbr07n6b2_pmcs/ 11
+2b_branches_tbr1n2b2_pmcs/ 1 3 7
