@@ -1,0 +1,9 @@
+2b_floorplan_n2b2_pmcs/ 1
+2b_health_n2b2_pmcs/ 3 7
+4l2b_A53_floorplan_n6b2_pmcs/ 1 5
+4l2b_A72_nqueens_n6b2_pmcs/ 10
+4l_floorplan_n4b0_pmcs/ 1 5
+4l_nqueens_n4b0_pmcs/ 4
+4l_sort_n4b0_pmcs/ 2
+4l_sparselu_n4b0_pmcs/ 1 2
+4l_strassen_n4b0_pmcs/ 2
