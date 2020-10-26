@@ -83,7 +83,7 @@ Theses variables is more specific for each dataset and each problem that you are
 NUMBER_MAX_ITER = 15  #how many times are necessary to try to get better accuracy
 MINIMUM_ACCURACY=0.5  #this is the minimum accuracy to avoid continue try more iterations
 K_FOLD_N_SPLITS = int(sys.argv[5])
-MAX_PMCS_TO_SELECT = 3 #this is the limite of our architecture
+MAX_PMCS_TO_SELECT = 6 #this is the limite of our architecture
 random.seed(sys.argv[4]) #this is for reproduce the same values
 
 class Common: 
@@ -215,7 +215,8 @@ class Common:
 
     @staticmethod
     def drop_constant_column_v2(df):
-        drop_col = [e for e in df.columns if df[e].nunique() == 1]
+        #drop_col = [e for e in df.columns if df[e].nunique() == 1]
+        drop_col = [i for i in range(len(df.columns)) if df[df.keys()[i]].nunique() == 1]
         #print("Columns removed:",drop_col)
         df.drop(drop_col,axis=1,inplace=True)
         return drop_col
@@ -292,9 +293,30 @@ class Common:
 
 #Class Variable
 class Dataset:
+    #df_pmcs = pd.read_csv(sys.argv[1])
+    #df_pmcs_avg = pd.read_csv(sys.argv[2])
+
+    #Whe should sure that both dataset has the same valid values (no zero) for each column
+    #First we remove all the invalid column and remove the same column in the other
+    #drop_col = Common.drop_constant_column_v2(df_pmcs_avg)
+    #df_pmcs.drop(drop_col,axis=1,inplace=True)
+
+    #Here we do the oposite
+    #drop_col = Common.drop_constant_column_v2(df_pmcs)
+    #df_pmcs_avg.drop(drop_col,axis=1,inplace=True)
+    
     df_pmcs = pd.read_csv(sys.argv[1])
     df_pmcs_avg = pd.read_csv(sys.argv[2])
-
+    
+    #print(df_pmcs.columns)
+    #first_row_full = {i:str(np.array(df_pmcs.columns)[int(i)]) for i in range(len(df_pmcs.columns))}
+    #first_row_avg = df_pmcs_avg.columns
+    
+    ########Problem: This deletes first row#########
+    df_pmcs_avg.columns = [str(i) for i in range(len(df_pmcs_avg.columns))]
+    df_pmcs.columns = [str(i) for i in range(len(df_pmcs.columns))]
+    ################################################
+    
     #Whe should sure that both dataset has the same valid values (no zero) for each column
     #First we remove all the invalid column and remove the same column in the other
     drop_col = Common.drop_constant_column_v2(df_pmcs_avg)
@@ -302,7 +324,7 @@ class Dataset:
 
     #Here we do the oposite
     drop_col = Common.drop_constant_column_v2(df_pmcs)
-    df_pmcs_avg.drop(drop_col,axis=1,inplace=True)
+    df_pmcs_avg.drop(drop_col,axis=0,inplace=True)
 
 
 class Models:
@@ -357,8 +379,8 @@ class HCA:
         df_pmcs = ds.df_pmcs.copy()
         df_pmcs_avg = ds.df_pmcs_avg.copy()
 
-        df_pmcs.drop(['avg_cycles','avg_instructions'],axis = 1,inplace=True)
-        df_pmcs_avg.drop(['avg_cycles','avg_instructions'],axis = 1,inplace=True)
+        df_pmcs.drop(['0'],axis = 1,inplace=True)
+        df_pmcs_avg.drop(['0'],axis = 1,inplace=True)
 
         #calculate correlation with all features each other
         corr = 1 - df_pmcs.corr(method=corr_method).abs()
@@ -409,8 +431,8 @@ class Wrapper:
         best_index = -1
 
         df = ds.df_pmcs_avg[subset_pmcs].copy() #this dataframe will not have instrcutions and cycles        
-        df['avg_instructions'] = ds.df_pmcs_avg['avg_instructions']
-        df['avg_cycles'] = ds.df_pmcs_avg['avg_cycles']
+        #df['avg_instructions'] = ds.df_pmcs_avg['avg_instructions']
+        df['0'] = ds.df_pmcs_avg['0']
 
         X = df.values
         last_column_name = list(ds.df_pmcs_avg.columns.values)[-1]
@@ -423,10 +445,10 @@ class Wrapper:
         #np.set_printoptions(suppress=True)
         #print(array)
 
-        pmcs_selected = df[['avg_instructions']].values
-        index_pmcs_selected.append(df.columns.get_loc("avg_instructions"))
-        pmcs_selected = df[['avg_cycles']].values
-        index_pmcs_selected.append(df.columns.get_loc("avg_cycles"))
+        #pmcs_selected = df[['avg_instructions']].values
+        #index_pmcs_selected.append(df.columns.get_loc("avg_instructions"))
+        pmcs_selected = df[['0']].values
+        index_pmcs_selected.append(df.columns.get_loc("0"))
 
         seed = random.randint(1, 1000)
         model = model
@@ -486,11 +508,11 @@ class Wrapper:
         feature_importances = pd.DataFrame(model.feature_importances_,index = X.columns,columns=['importance']).sort_values('importance',ascending=False).head(3)
         subset_pmcs = feature_importances.index.tolist()
 
-        if subset_pmcs.count("avg_instructions") == 1 or subset_pmcs.count("avg_cycles") == 1:
+        if subset_pmcs.count("avg_instructions") == 1 or subset_pmcs.count("0") == 1:
             print("Another pmcs should be select because instructions and cycles are already select by default!")
         df = ds.df_pmcs_avg[subset_pmcs].copy() #this dataframe will not have instrcutions and cycles
         df['avg_instructions'] = ds.df_pmcs_avg['avg_instructions']
-        df['avg_cycles'] = ds.df_pmcs_avg['avg_cycles']
+        df['0'] = ds.df_pmcs_avg['0']
         #print(df.shape)
 
         X = df.values
@@ -502,15 +524,14 @@ class Wrapper:
         score = Common.score_regression(Y,predicted)
         #print("Score:", score)
 
-        subset_pmcs = ['avg_cycles','avg_instructions'] + subset_pmcs
+        subset_pmcs = ['0'] + subset_pmcs
         return score,subset_pmcs,seed
 
 
-
-    @staticmethod
     '''
     This function call the last two other functions.
     '''
+    @staticmethod
     def select_best_pmcs(models,subset_pmcs):
         list_scores_pmcs_selected = []
         list_index_pmcs_selected = []
@@ -565,7 +586,7 @@ class Filter:
         We are assuming that target is the last column
         '''
         df = df_pmcs_avg.copy()
-        df.drop(['avg_cycles','avg_instructions'],axis = 1,inplace=True)#As we will select them regardless, i removed
+        df.drop(['0'],axis = 1,inplace=True)#As we will select them regardless, i removed
         last_column_name = list(df.columns.values)[-1]
         correlation_matriz = df.corr(method)
         dic_params = abs(correlation_matriz[last_column_name]).sort_values(ascending=False).to_dict()
@@ -719,137 +740,156 @@ class Accuracy:
          return r2_list,round(statistics.mean(r2_list),2), round(statistics.stdev(r2_list),2)
 
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+if __name__ == '__main__':
+    
+    ds = Dataset()
+    #HCA.create_hca()
+    
+    if sys.argv[3] == "FilterCorrelation":
+       logging.info("FilterCorrelation - Select Features")
+       models = Models.get_models_initial_parameters()
 
-ds = Dataset()
-#HCA.create_hca()
+       results = []
+       corr_method=['pearson', 'spearman', 'kendall']
+       for i in range(len(corr_method)):
+           print("Using correlation method:", corr_method[i])
+           logging.info("Correlation:%s",corr_method[i])
 
-if sys.argv[3] == "FilterCorrelation":
-   logging.info("FilterCorrelation - Select Features")
-   models = Models.get_models_initial_parameters_with_MLP()
+           last_column_name = list(ds.df_pmcs_avg.columns.values)[-1]
+           dic_params = Filter.get_features_correlated_with_target_sorted(ds.df_pmcs_avg,corr_method[i])
 
-   results = []
-   corr_method=['pearson', 'spearman', 'kendall']
-   for i in range(len(corr_method)):
-       logging.info("Correlation:%s",corr_method[i])
+           subset_pmcs = []
+           max = 0
+           for key,value in dic_params.items():
+               if not key == last_column_name:
+                   if max ==30: #get the best 30 features
+                       break
+                   subset_pmcs.append(key)
+                   max+=1
 
-       last_column_name = list(ds.df_pmcs_avg.columns.values)[-1]
-       dic_params = Filter.get_features_correlated_with_target_sorted(ds.df_pmcs_avg,corr_method[i])
-       subset_pmcs = []
-       max = 0
-       for key,value in dic_params.items():
-           if not key == last_column_name:
-               if max ==30: #get the best 30 features
-                   break
-               subset_pmcs.append(key)
-               max+=1
+           #subset_pmcs = ['avg_cycles','avg_instructions'] + subset_pmcs
+           best_pmcs,score,seeds = Wrapper.select_best_pmcs(models,subset_pmcs) #Here we have n models and different pmcs selection for each model probably
 
-       #subset_pmcs = ['avg_cycles','avg_instructions'] + subset_pmcs
-       best_pmcs,score,seeds = Wrapper.select_best_pmcs(models,subset_pmcs) #Here we have n models and different pmcs selection for each model probably
+           #Common.plot_density_histogram_for_correlations(models,best_pmcs,correlations[i])
 
-       #Common.plot_density_histogram_for_correlations(models,best_pmcs,correlations[i])
+           for j in range(len(models)):
+               #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
+               logging.info("Model:%s best_pmcs:%s r2:%s",models[j][0],best_pmcs[j],score[j])
+               results.append(best_pmcs[j])
 
-       for j in range(len(models)):
-           #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
-           logging.info("Model:%s best_pmcs:%s r2:%s",models[j][0],best_pmcs[j],score[j])
-           results.append(best_pmcs[j])
-
-   Common.convert_list_to_df_and_save(results, "FilterCorrelation_Best_PMCs.csv")
+       Common.convert_list_to_df_and_save(results, "FilterCorrelation_Best_PMCs.csv")
 
 
-   logging.info("\nFilterCorrelation - Validation")
-   results = []
-   for i in range(len(correlations)):
-       logging.info("\nCorrelation:%s",correlations[i])
+       logging.info("\nFilterCorrelation - Validation")
+       results = []
+       for i in range(len(corr_method)):
+           logging.info("\nCorrelation:%s",corr_method[i])
 
-       for j in range(len(models)):
-           row = []
-           X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs[j])
-           r2_list,avg,std = Accuracy.calculate_accuracy(models[j][0],models[j][1],X,Y.ravel())
-           logging.info("Model:%s r2:%s avg:%s std:%s",models[j][0],r2_list,avg,std)
-           algorithm = "Filter_" + corr_method[i] + "_" + models[j][0]
-           row.append(algorithm)
-           row.append(avg)
-           row.append(std)
-           results.append(row)
+           for j in range(len(models)):
+               row = []
+               X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs[j])
+               r2_list,avg,std = Accuracy.calculate_accuracy(models[j][0],models[j][1],X,Y.ravel())
+               logging.info("Model:%s r2:%s avg:%s std:%s",models[j][0],r2_list,avg,std)
+               algorithm = "Filter_" + corr_method[i] + "_" + models[j][0]
+               row.append(algorithm)
+               row.append(avg)
+               row.append(std)
+               results.append(row)
 
-   Common.convert_list_to_df_and_save(results, "FilterCorrelation_Accuracy.csv")
+       Common.convert_list_to_df_and_save(results, "FilterCorrelation_Accuracy.csv")
 
 
-elif sys.argv[3] == "HCA_FilterCorrelation":
-   #HCA.create_hca()
-   logging.info("HCA_FilterCorrelation")
-   results = []
-   corr_method=['pearson', 'spearman', 'kendall']
-   for i in range(len(corr_method)):
-       #print("Correlation:",corr_method[i])
-       logging.info("Correlation:%s",corr_method[i])
-       features_per_cluster_sorted = HCA.get_features_per_cluster(30,corr_method[i])
-       subset_features = []
-       for cluster in features_per_cluster_sorted:
-           subset_features.append(cluster[0][0][0])
-       models = Models.get_models_initial_parameters_with_MLP()
+    elif sys.argv[3] == "HCA_FilterCorrelation":
+       #HCA.create_hca()
+       logging.info("HCA_FilterCorrelation")
+       results = []
+       corr_method=['pearson', 'spearman', 'kendall']
+       for i in range(len(corr_method)):
+           #print("Correlation:",corr_method[i])
+           logging.info("Correlation:%s",corr_method[i])
+           features_per_cluster_sorted = HCA.get_features_per_cluster(30,corr_method[i])
+           subset_features = []
+           for cluster in features_per_cluster_sorted:
+               subset_features.append(cluster[0][0][0])
+           models = Models.get_models_initial_parameters()
+           best_pmcs,score,seeds = Wrapper.select_best_pmcs(models,subset_features)
+
+           #Common.plot_density_histogram_for_correlations(models,best_pmcs,correlations[i])
+           '''
+           for j in range(len(models)):
+               row = []
+               #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
+               logging.info("Model:%s best_pmcs:%s r2:%s",models[j][0],best_pmcs[j],score[j])
+               X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs[j])
+               r2_list,avg,std = Accuracy.calculate_accuracy(models[j][0],models[j][1],X,Y.ravel())
+               algorithm = "HCA_Filter_" + corr_method[i] + "_" + models[j][0]
+               row.append(algorithm)
+               row.append(avg)
+               row.append(std)
+               results.append(row)
+           '''
+       #Common.convert_list_to_df_and_save(results, "HCA_FilterCorrelation_Accuracy.csv")
+
+    elif sys.argv[3] == "WrapperImportance":
+       logging.info("WrapperImportance")
+       models = Models.get_models_initial_parameters()
+       subset_features = [[],[],[]]
        best_pmcs,score,seeds = Wrapper.select_best_pmcs(models,subset_features)
 
-       #Common.plot_density_histogram_for_correlations(models,best_pmcs,correlations[i])
-       '''
+       #Common.plot_density_histogram(models,best_pmcs)
+
+       results = []
        for j in range(len(models)):
-           row = []
-           #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
            logging.info("Model:%s best_pmcs:%s r2:%s",models[j][0],best_pmcs[j],score[j])
+           #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
+           results.append(best_pmcs[j])
+       Common.convert_list_to_df_and_save(results, "WrapperImportance_Best_PMCs.csv")
+
+
+       logging.info("\nWrapperImportance - Validation")
+       results = []
+       for i in range(len(models)):
+           row = []
            X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs[j])
-           r2_list,avg,std = Accuracy.calculate_accuracy(models[j][0],models[j][1],X,Y.ravel())
-           algorithm = "HCA_Filter_" + corr_method[i] + "_" + models[j][0]
+           r2_list,avg,std = Accuracy.calculate_accuracy(models[i][0],models[i][1],X,Y.ravel())
+           logging.info("Model:%s r2:%s avg:%s std:%s",models[i][0],r2_list,avg,std)
+           algorithm = "WrapperImportance_" + models[i][0]
            row.append(algorithm)
            row.append(avg)
            row.append(std)
            results.append(row)
+       Common.convert_list_to_df_and_save(results, "WrapperImportance_Accuracy.csv")
+
        '''
-   #Common.convert_list_to_df_and_save(results, "HCA_FilterCorrelation_Accuracy.csv")
+       For using tunning, passing as parametrs and make some contition on code.
+       For example, we can reuse models and best_pmcs from th begining and do this:
 
-elif sys.argv[3] == "WrapperImportance":
-   logging.info("WrapperImportance")
-   models = Models.get_models_initial_parameters()
-   subset_features = [[],[],[]]
-   best_pmcs,score,seeds = Wrapper.select_best_pmcs(models,subset_features)
-
-   #Common.plot_density_histogram(models,best_pmcs)
-
-   results = []
-   for j in range(len(models)):
-       logging.info("Model:%s best_pmcs:%s r2:%s",models[j][0],best_pmcs[j],score[j])
-       #print(models[j][0],pmcs_selected[j],"R2:",score[j]," Seed:",seeds[j])
-       results.append(best_pmcs[j])
-   Common.convert_list_to_df_and_save(results, "WrapperImportance_Best_PMCs.csv")
-
-
-   logging.info("\nWrapperImportance - Validation")
-   results = []
-   for i in range(len(models)):
-       row = []
-       X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs[j])
-       r2_list,avg,std = Accuracy.calculate_accuracy(models[i][0],models[i][1],X,Y.ravel())
-       logging.info("Model:%s r2:%s avg:%s std:%s",models[i][0],r2_list,avg,std)
-       algorithm = "WrapperImportance_" + models[i][0]
-       row.append(algorithm)
-       row.append(avg)
-       row.append(std)
-       results.append(row)
-   Common.convert_list_to_df_and_save(results, "WrapperImportance_Accuracy.csv")
-
-   '''
-   For using tunning, passing as parametrs and make some contition on code.
-   For example, we can reuse models and best_pmcs from th begining and do this:
-
-   models_tunned = Tunning.tunning_model(models,best_pmcs)
-   for j in range(len(models)):
+       models_tunned = Tunning.tunning_model(models,best_pmcs)
+       for j in range(len(models)):
          X, Y = Common.get_subset_features_and_target(ds.df_pmcs_avg.copy(), best_pmcs)
          r2_list,avg,std = Accuracy.calculate_accuracy(models[j][0],models_tunned[j],scaler.transform(X),Y.ravel())
          print(r2_list,avg)
-   '''
+       '''
 
 
-else:
-   print("\n Wrong parameter!! You should pass FilterCorrelation,HCA_FilterCorrelation or WrapperImportance. \n")
+    else:
+       print("\n Wrong parameter!! You should pass FilterCorrelation,HCA_FilterCorrelation or WrapperImportance. \n")
 
 
 
